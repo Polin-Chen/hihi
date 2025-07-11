@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>簡易購物網站</title>
+    <style>
+        body { font-family: 'Microsoft JhengHei', Arial, sans-serif; background: #f7f7f7; margin: 0; }
+        .container { max-width: 900px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px #ccc; }
+        h1 { text-align: center; color: #333; }
+        .products { display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; }
+        .product { background: #fafafa; border-radius: 8px; box-shadow: 0 1px 4px #ddd; padding: 20px; width: 220px; text-align: center; }
+        .product img { width: 150px; height: 150px; object-fit: cover; border-radius: 6px; }
+        .product h2 { font-size: 1.2em; margin: 10px 0 5px; }
+        .product p { color: #666; font-size: 0.95em; }
+        .product .price { color: #e67e22; font-weight: bold; margin: 8px 0; }
+        .product button { background: #27ae60; color: #fff; border: none; padding: 8px 18px; border-radius: 4px; cursor: pointer; font-size: 1em; }
+        .product button:hover { background: #219150; }
+        .cart { margin-top: 40px; background: #f0f0f0; border-radius: 8px; padding: 20px; }
+        .cart h2 { margin-top: 0; }
+        .cart-list { list-style: none; padding: 0; }
+        .cart-list li { margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+        .cart-item-info { flex: 1; }
+        .cart-qty { width: 40px; text-align: center; }
+        .cart-remove { background: #e74c3c; color: #fff; border: none; border-radius: 4px; padding: 4px 8px; cursor: pointer; margin-left: 10px; }
+        .cart-remove:hover { background: #c0392b; }
+        .cart-total { font-weight: bold; color: #e67e22; margin-top: 10px; }
+        footer { text-align: center; color: #aaa; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>簡易購物網站 Demo</h1>
+        <div class="products">
+            <div class="product">
+                <img src="https://i.ibb.co/MDwF27Ft/S-158220290.jpg"  alt="隨機商品1">
+                <h2>陳柏霖</h2>
+                <p>清華大學180首發中鋒</p>
+                <div class="price">NT$35</div>
+                <button onclick="addToCart('陳柏霖', 35)">加入購物車</button>
+            </div>
+            <div class="product">
+                <img src="https://i.ibb.co/1YqK8BzV/61477.jpg"  alt="隨機商品2">
+                <h2>李奇</h2>
+                <p>這是一位新生代89潛力股</p>
+                <div class="price">NT$89</div>
+                <button onclick="addToCart('李奇', 89)">加入購物車</button>
+            </div>
+            <div class="product">
+                <img src="https://i.ibb.co/0RWt5bTr/S-158220293.jpg"  alt="隨機商品3">
+                <h2>高瑞謙</h2>
+                <p>台大電機高材生想舔爆權恩妃</p>
+                <div class="price">NT$100</div>
+                <button onclick="addToCart('高瑞謙', 100)">加入購物車</button>
+            </div>
+        </div>
+
+        <div class="cart" id="cart">
+            <h2>🛒 購物車</h2>
+            <ul class="cart-list" id="cart-list"></ul>
+            <div class="cart-total" id="cart-total"></div>
+        </div>
+    </div>
+    <footer>
+        &copy; 2024 簡易購物網站
+    </footer>
+    <script>
+        // 購物車資料
+        let cart = [];
+
+        // 加入購物車函數
+        function addToCart(name, price) {
+            const index = cart.findIndex(item => item.name === name);
+            if (index !== -1) {
+                cart[index].qty += 1;
+            } else {
+                cart.push({name, price, qty: 1});
+            }
+            updateCart();
+        }
+
+        // 移除商品
+        function removeFromCart(name) {
+            cart = cart.filter(item => item.name !== name);
+            updateCart();
+        }
+
+        // 調整數量
+        function changeQty(name, qty) {
+            const item = cart.find(item => item.name === name);
+            if (item) {
+                item.qty = Math.max(1, parseInt(qty) || 1);
+                updateCart();
+            }
+        }
+
+        // 更新購物車顯示
+        function updateCart() {
+            const cartList = document.getElementById('cart-list');
+            const cartTotal = document.getElementById('cart-total');
+            cartList.innerHTML = '';
+            let total = 0;
+            if (cart.length === 0) {
+                cartList.innerHTML = '<li>購物車是空的。</li>';
+                cartTotal.textContent = '';
+                return;
+            }
+            cart.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span class=\"cart-item-info\">${item.name} - NT$${item.price} x 
+                        <input type=\"number\" class=\"cart-qty\" min=\"1\" value=\"${item.qty}\" onchange=\"changeQty('${item.name}', this.value)\">
+                    </span>
+                    <button class=\"cart-remove\" onclick=\"removeFromCart('${item.name}')\">移除</button>
+                `;
+                cartList.appendChild(li);
+                total += item.price * item.qty;
+            });
+            cartTotal.textContent = `總金額：NT$${total}`;
+        }
+
+        // 頁面載入時初始化購物車
+        updateCart();
+    </script>
+</body>
+</html> 
